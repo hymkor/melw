@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -14,10 +15,27 @@ import (
 type Handler struct {
 }
 
+var jumpTable = map[string]func(w http.ResponseWriter, req *http.Request) error{
+	"Edit":    actionEdit,
+	"Preview": actionPreview,
+	"Save":    actionSave,
+}
+
 func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	log.Printf("%s %s \"%s\"\n", req.RemoteAddr, req.Method, req.URL.Path)
+
+	if f, ok := jumpTable[req.FormValue("a")]; ok {
+		if err := f(w, req); err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
+
 	thePath, err := url.QueryUnescape(req.URL.Path)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err.Error())
 		return
 	}
 	thePath = filepath.Join(".", filepath.FromSlash(thePath))
@@ -29,34 +47,41 @@ func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
+		log.Println(err.Error())
 		return
 	}
 	if stat.IsDir() {
-		handler.listIndex(w, req, thePath)
+		if err := handler.listIndex(w, req, thePath); err != nil {
+			log.Println(err.Error())
+		}
 	} else if strings.HasSuffix(thePath, ".md") {
-		if err := catAsMarkdown(thePath, w); err != nil {
+		if err := catAsMarkdown(thePath, w, req); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
+			log.Println(err.Error())
 		}
 	} else {
-		handler.catFile(w, req, thePath)
+		if err := handler.catFile(w, req, thePath); err != nil {
+			log.Println(err.Error())
+		}
 	}
 }
 
-func (handler *Handler) catFile(w http.ResponseWriter, req *http.Request, thePath string) {
+func (handler *Handler) catFile(w http.ResponseWriter, req *http.Request, thePath string) error {
 	fd, err := os.Open(thePath)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return err
 	}
 	defer fd.Close()
 	io.Copy(w, fd)
+	return nil
 }
 
-func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string) {
+func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string) error {
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return err
 	}
 	w.Header().Add("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
@@ -74,6 +99,7 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 		}
 		io.WriteString(w, "</a></li>\n")
 	}
+	return nil
 }
 
 func mains() error {
