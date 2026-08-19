@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -32,6 +33,10 @@ func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if stat.IsDir() {
 		handler.listIndex(w, req, thePath)
+	} else if strings.HasSuffix(thePath, ".md") {
+		if err := catAsMarkdown(thePath, w); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	} else {
 		handler.catFile(w, req, thePath)
 	}
