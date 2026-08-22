@@ -65,6 +65,10 @@ func (handler *Handler) serveHTTP(w http.ResponseWriter, req *http.Request) erro
 }
 
 func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string) error {
+	if !strings.HasSuffix(req.URL.Path, "/") {
+		http.Redirect(w, req, req.URL.Path+"/", http.StatusMovedPermanently)
+		return nil
+	}
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		return err
