@@ -28,44 +28,39 @@ var jumpTable = map[string]func(w http.ResponseWriter, req *http.Request) error{
 func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	log.Printf("%s %s \"%s\"\n", req.RemoteAddr, req.Method, req.URL.Path)
 
-	if f, ok := jumpTable[req.FormValue("a")]; ok {
-		if err := f(w, req); err != nil {
-			log.Println(err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
+	err := handler.serveHTTP(w, req)
+	if err != nil {
+		log.Println(err.Error())
+		if os.IsNotExist(err) {
+			http.NotFound(w, req)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		return
+	}
+}
+
+func (handler *Handler) serveHTTP(w http.ResponseWriter, req *http.Request) error {
+	if f, ok := jumpTable[req.FormValue("a")]; ok {
+		return f(w, req)
 	}
 
 	thePath, err := url.QueryUnescape(req.URL.Path)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err.Error())
-		return
+		return err
 	}
 	thePath = filepath.Join(".", filepath.FromSlash(thePath))
 
 	stat, err := os.Stat(thePath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			http.NotFound(w, req)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-		log.Println(err.Error())
-		return
+		return err
 	}
 	if stat.IsDir() {
-		if err := handler.listIndex(w, req, thePath); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Println(err.Error())
-		}
+		return handler.listIndex(w, req, thePath)
 	} else if strings.HasSuffix(thePath, ".md") {
-		if err := catAsMarkdown(thePath, w, req); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Println(err.Error())
-		}
+		return catAsMarkdown(thePath, w, req)
 	} else {
 		http.ServeFile(w, req, thePath)
+		return nil
 	}
 }
 
