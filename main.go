@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"net/http"
@@ -44,7 +45,7 @@ func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	stat, err := os.Stat(thePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			w.WriteHeader(http.StatusNotFound)
+			http.NotFound(w, req)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
@@ -53,6 +54,7 @@ func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if stat.IsDir() {
 		if err := handler.listIndex(w, req, thePath); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
 			log.Println(err.Error())
 		}
 	} else if strings.HasSuffix(thePath, ".md") {
@@ -61,32 +63,20 @@ func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			log.Println(err.Error())
 		}
 	} else {
-		if err := handler.catFile(w, req, thePath); err != nil {
-			log.Println(err.Error())
-		}
+		http.ServeFile(w, req, thePath)
 	}
-}
-
-func (handler *Handler) catFile(w http.ResponseWriter, req *http.Request, thePath string) error {
-	fd, err := os.Open(thePath)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return err
-	}
-	defer fd.Close()
-	io.Copy(w, fd)
-	return nil
 }
 
 func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string) error {
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		return err
 	}
 	w.Header().Add("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "<html><body><h1>Markdown Editor Like Wiki</h1><ul>\n")
+	dir_ := html.EscapeString(dir)
+	fmt.Fprintf(w, "<html><head><title>Index: %s/</title></head>\n", dir_)
+	fmt.Fprintf(w, "<body><h1>Index: %s/</h1><ul>\n", dir_)
 	defer io.WriteString(w, "</ul></body></html>\n")
 
 	for _, entry := range files {
@@ -94,7 +84,7 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 		path := filepath.ToSlash(filepath.Join(dir, name))
 		fmt.Fprintf(w, "<li><a href=\"%s\">%s",
 			url.PathEscape(path),
-			name)
+			html.EscapeString(name))
 		if entry.IsDir() {
 			w.Write([]byte{'/'})
 		}

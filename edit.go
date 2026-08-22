@@ -12,8 +12,9 @@ import (
 )
 
 func drawForm(w http.ResponseWriter, req *http.Request, source string) {
-	fmt.Fprintf(w, "<form action=\"%s\" method=\"POST\">\n",
-		html.EscapeString(path.Clean(req.URL.Path)))
+	path_ := html.EscapeString(path.Clean(req.URL.Path))
+	fmt.Fprintf(w, "<h1>Edit: %s</h1>\n", path_)
+	fmt.Fprintf(w, "<form action=\"%s\" method=\"POST\">\n", path_)
 	fmt.Fprintf(w, "<textarea name=\"text\" style=\"width:100%%\" cols=\"80\" rows=\"20\">%s</textarea>\n",
 		html.EscapeString(source))
 	fmt.Fprintf(w, "<input type=\"submit\" name=\"a\" value=\"Preview\" />\n")
