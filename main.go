@@ -77,13 +77,16 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 	fmt.Fprint(w, "<ul>\n")
 	for _, entry := range files {
 		name := entry.Name()
-		path := filepath.ToSlash(filepath.Join(dir, name))
-		fmt.Fprintf(w, "<li><a href=\"%s\">%s",
-			url.PathEscape(path),
-			html.EscapeString(name))
+		slash := ""
 		if entry.IsDir() {
-			w.Write([]byte{'/'})
+			slash = "/"
 		}
+		// path := filepath.ToSlash(filepath.Join(dir, name))
+		fmt.Fprintf(w, "<li><a href=\"%s%s\">%s%s",
+			url.PathEscape(name),
+			slash,
+			html.EscapeString(name),
+			slash)
 		io.WriteString(w, "</a></li>\n")
 	}
 	fmt.Fprint(w, "</ul>\n")
