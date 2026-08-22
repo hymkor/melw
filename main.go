@@ -105,6 +105,7 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 
 var (
 	flagC = flag.String("C", "", "Change working directory")
+	flagP = flag.Uint("P", 8000, "Port")
 )
 
 func mains() error {
@@ -115,7 +116,7 @@ func mains() error {
 	}
 	handler := new(Handler)
 	service := &http.Server{
-		Addr:           ":8000",
+		Addr:           fmt.Sprintf(":%d", *flagP),
 		Handler:        handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
