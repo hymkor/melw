@@ -4,10 +4,10 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark-meta"
@@ -102,7 +102,7 @@ func catAsMarkdown(path string, w http.ResponseWriter, req *http.Request) error 
 	fmt.Fprint(w, "<a href=\"/\">Index</a>\n")
 	fmt.Fprint(w, "</div>\n")
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"%s\">\n",
-		url.QueryEscape(req.URL.Path))
+		html.EscapeString(req.URL.Path))
 	fmt.Fprint(w, "<input type=\"submit\" name=\"a\" value=\"Edit\" />\n")
 	fmt.Fprint(w, "</form>\n")
 	body.WriteTo(w)
