@@ -21,6 +21,8 @@ var jumpTable = map[string]func(w http.ResponseWriter, req *http.Request) error{
 	"Edit":    actionEdit,
 	"Preview": actionPreview,
 	"Save":    actionSave,
+	"New":     actionNew,
+	"Cancel":  actionCancel,
 }
 
 func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -76,9 +78,8 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 	w.WriteHeader(http.StatusOK)
 	dir_ := html.EscapeString(dir)
 	fmt.Fprintf(w, "<html><head><title>Index: %s/</title></head>\n", dir_)
-	fmt.Fprintf(w, "<body><h1>Index: %s/</h1><ul>\n", dir_)
-	defer io.WriteString(w, "</ul></body></html>\n")
-
+	fmt.Fprintf(w, "<body><h1>Index: %s/</h1>\n", dir_)
+	fmt.Fprint(w, "<ul>\n")
 	for _, entry := range files {
 		name := entry.Name()
 		path := filepath.ToSlash(filepath.Join(dir, name))
@@ -90,6 +91,13 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 		}
 		io.WriteString(w, "</a></li>\n")
 	}
+	fmt.Fprint(w, "</ul>\n")
+	fmt.Fprintf(w, "<form action=\"%s\" method=\"POST\">\n", dir_)
+	fmt.Fprintf(w, "<input type=\"hidden\" name=\"dir\" value=\"%s\" />\n", dir_)
+	fmt.Fprint(w, "<input type=\"text\" name=\"p\" /><tt>.md</tt>\n")
+	fmt.Fprint(w, "<input type=\"submit\" name=\"a\" value=\"New\" />\n")
+	fmt.Fprint(w, "</form>\n")
+	io.WriteString(w, "</body></html>\n")
 	return nil
 }
 
