@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -102,7 +103,16 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 	return nil
 }
 
+var (
+	flagC = flag.String("C", "", "Change working directory")
+)
+
 func mains() error {
+	if *flagC != "" {
+		if err := os.Chdir(*flagC); err != nil {
+			return err
+		}
+	}
 	handler := new(Handler)
 	service := &http.Server{
 		Addr:           ":8000",
@@ -121,6 +131,7 @@ func mains() error {
 }
 
 func main() {
+	flag.Parse()
 	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
