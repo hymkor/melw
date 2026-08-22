@@ -5,55 +5,47 @@ import (
 	"html"
 	"io"
 	"net/http"
-	"net/url"
-	"os"
 	"path"
-	"path/filepath"
 	"strings"
 )
 
-func drawForm(w http.ResponseWriter, req *http.Request, thePath, source string) {
-	path_ := html.EscapeString(path.Clean(thePath))
+func drawForm(w http.ResponseWriter, req *http.Request, netPath, source string) {
+	path_ := html.EscapeString(netPath)
 	fmt.Fprintf(w, "<h1>Edit: %s</h1>\n", path_)
 	fmt.Fprintf(w, "<form action=\"%s\" method=\"POST\">\n", path_)
 	fmt.Fprintf(w, "<textarea name=\"text\" style=\"width:100%%\" cols=\"80\" rows=\"20\">%s</textarea>\n",
 		html.EscapeString(source))
-	fmt.Fprintf(w, "<input type=\"submit\" name=\"a\" value=\"Preview\" />\n")
-	fmt.Fprintf(w, "<input type=\"submit\" name=\"a\" value=\"Save\" />\n")
-	fmt.Fprintf(w, "<input type=\"submit\" name=\"a\" value=\"Cancel\" style=\"float:right\" />\n")
+	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Preview\" />\n")
+	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Save\" />\n")
+	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Cancel\" style=\"float:right\" />\n")
 	io.WriteString(w, "</form>\n")
 
 }
 
-func actionNew(w http.ResponseWriter, req *http.Request) error {
+func (h *Handler) actionNew(w http.ResponseWriter, req *http.Request) error {
 	dir := req.FormValue("dir")
 	page := req.FormValue("p") + ".md"
-	thePath := filepath.Join(dir, page)
-	return doEdit(w, req, thePath)
+	netPath := path.Join(dir, page)
+	return h.doEdit(w, req, netPath)
 }
 
-func actionEdit(w http.ResponseWriter, req *http.Request) error {
-	thePath, err := url.QueryUnescape(req.URL.Path)
-	if err != nil {
-		return err
-	}
-	thePath = filepath.Join(".", filepath.FromSlash(thePath))
-	return doEdit(w, req, thePath)
+func (h *Handler) actionEdit(w http.ResponseWriter, req *http.Request) error {
+	return h.doEdit(w, req, req.URL.Path)
 }
 
-func doEdit(w http.ResponseWriter, req *http.Request, thePath string) error {
-	source, err := os.ReadFile(thePath)
+func (h *Handler) doEdit(w http.ResponseWriter, req *http.Request, netPath string) error {
+	source, err := h.ReadFile(netPath)
 	if err != nil {
 		source = []byte{}
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
-	drawForm(w, req, thePath, string(source))
+	drawForm(w, req, netPath, string(source))
 	fmt.Fprintln(w, htmlFooter)
 	return nil
 }
 
-func actionPreview(w http.ResponseWriter, req *http.Request) error {
+func (h *Handler) actionPreview(w http.ResponseWriter, req *http.Request) error {
 	source := req.FormValue("text")
 	htmls, err := markdownToHtml([]byte(source))
 	if err != nil {
@@ -69,25 +61,24 @@ func actionPreview(w http.ResponseWriter, req *http.Request) error {
 }
 
 func transfer(w io.Writer, newUrl string) {
-	newUrl = html.EscapeString(path.Clean(newUrl))
+	newUrl = html.EscapeString(newUrl)
 
-	fmt.Fprint(w, "<html><head>\n")
+	io.WriteString(w, "<html><head>\n")
 	fmt.Fprintf(w, "<meta http-equiv=\"refresh\" content=\"1;URL=%s\">\n", newUrl)
-	fmt.Fprint(w, "</head><body>\n")
+	io.WriteString(w, "</head><body>\n")
 	fmt.Fprintf(w, "<p><a href=\"%s\">Wait or Click Here</a></p>\n", newUrl)
-	fmt.Fprintf(w, "</body></html>\n")
+	io.WriteString(w, "</body></html>\n")
 }
 
-func actionSave(w http.ResponseWriter, req *http.Request) error {
+func (h *Handler) actionSave(w http.ResponseWriter, req *http.Request) error {
 	source := req.FormValue("text")
-	thePath, err := url.QueryUnescape(req.URL.Path)
-	thePath = filepath.Join(".", filepath.FromSlash(thePath))
 	newUrl := req.URL.Path
+	var err error
 	if strings.TrimSpace(source) == "" {
-		err = os.Remove(thePath)
+		err = h.Remove(req.URL.Path)
 		newUrl = path.Dir(newUrl)
 	} else {
-		err = os.WriteFile(thePath, []byte(source), 0644)
+		err = h.WriteFile(req.URL.Path, []byte(source), 0644)
 	}
 	if err != nil {
 		return err
@@ -97,16 +88,11 @@ func actionSave(w http.ResponseWriter, req *http.Request) error {
 	return nil
 }
 
-func actionCancel(w http.ResponseWriter, req *http.Request) error {
-	thePath, err := url.QueryUnescape(req.URL.Path)
-	if err != nil {
-		return err
-	}
-	thePath = filepath.Join(".", filepath.FromSlash(thePath))
-	_, err = os.Stat(thePath)
+func (h *Handler) actionCancel(w http.ResponseWriter, req *http.Request) error {
+	_, err := h.Stat(req.URL.Path)
 	if err != nil {
 		transfer(w, path.Dir(req.URL.Path))
 		return nil
 	}
-	return catAsMarkdown(thePath, w, req)
+	return h.catAsMarkdown(req.URL.Path, w, req)
 }

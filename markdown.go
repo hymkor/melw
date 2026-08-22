@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/yuin/goldmark"
@@ -87,8 +86,8 @@ func markdownToHtml(source []byte) (io.WriterTo, error) {
 	return &buffer, err
 }
 
-func catAsMarkdown(path string, w http.ResponseWriter, req *http.Request) error {
-	source, err := ioutil.ReadFile(path)
+func (h *Handler) catAsMarkdown(diskPath string, w http.ResponseWriter, req *http.Request) error {
+	source, err := h.ReadFile(diskPath)
 	if err != nil {
 		return err
 	}
@@ -98,13 +97,13 @@ func catAsMarkdown(path string, w http.ResponseWriter, req *http.Request) error 
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
-	fmt.Fprint(w, "<div style=\"float:right\">\n")
-	fmt.Fprint(w, "<a href=\"/\">Index</a>\n")
-	fmt.Fprint(w, "</div>\n")
+	io.WriteString(w, "<div style=\"float:right\">\n")
+	io.WriteString(w, "<a href=\"/\">Index</a>\n")
+	io.WriteString(w, "</div>\n")
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"%s\">\n",
 		html.EscapeString(req.URL.Path))
-	fmt.Fprint(w, "<input type=\"submit\" name=\"a\" value=\"Edit\" />\n")
-	fmt.Fprint(w, "</form>\n")
+	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Edit\" />\n")
+	io.WriteString(w, "</form>\n")
 	body.WriteTo(w)
 	fmt.Fprintln(w, htmlFooter)
 	return err

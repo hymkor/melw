@@ -9,20 +9,16 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 )
 
-type Handler struct {
-}
-
-var jumpTable = map[string]func(w http.ResponseWriter, req *http.Request) error{
-	"Edit":    actionEdit,
-	"Preview": actionPreview,
-	"Save":    actionSave,
-	"New":     actionNew,
-	"Cancel":  actionCancel,
+var jumpTable = map[string]func(h *Handler, w http.ResponseWriter, req *http.Request) error{
+	"Edit":    (*Handler).actionEdit,
+	"Preview": (*Handler).actionPreview,
+	"Save":    (*Handler).actionSave,
+	"New":     (*Handler).actionNew,
+	"Cancel":  (*Handler).actionCancel,
 }
 
 func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -39,37 +35,39 @@ func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (handler *Handler) serveHTTP(w http.ResponseWriter, req *http.Request) error {
+func (h *Handler) serveHTTP(w http.ResponseWriter, req *http.Request) error {
 	if f, ok := jumpTable[req.FormValue("a")]; ok {
-		return f(w, req)
+		return f(h, w, req)
 	}
-
-	thePath, err := url.QueryUnescape(req.URL.Path)
-	if err != nil {
-		return err
-	}
-	thePath = filepath.Join(".", filepath.FromSlash(thePath))
-
-	stat, err := os.Stat(thePath)
+	stat, err := h.Stat(req.URL.Path)
 	if err != nil {
 		return err
 	}
 	if stat.IsDir() {
-		return handler.listIndex(w, req, thePath)
-	} else if strings.HasSuffix(thePath, ".md") {
-		return catAsMarkdown(thePath, w, req)
+		return h.listIndex(w, req, req.URL.Path)
+	} else if strings.HasSuffix(req.URL.Path, ".md") {
+		return h.catAsMarkdown(req.URL.Path, w, req)
 	} else {
-		http.ServeFile(w, req, thePath)
-		return nil
+		return h.catFile(w, req)
 	}
 }
 
-func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string) error {
+func (h *Handler) catFile(w http.ResponseWriter, req *http.Request) error {
+	fd, err := h.Open(req.URL.Path)
+	if err != nil {
+		return err
+	}
+	defer fd.Close()
+	io.Copy(w, fd)
+	return nil
+}
+
+func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string) error {
 	if !strings.HasSuffix(req.URL.Path, "/") {
 		http.Redirect(w, req, req.URL.Path+"/", http.StatusMovedPermanently)
 		return nil
 	}
-	files, err := os.ReadDir(dir)
+	files, err := h.ReadDir(dir)
 	if err != nil {
 		return err
 	}
@@ -77,15 +75,14 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 	w.WriteHeader(http.StatusOK)
 	dir_ := html.EscapeString(dir)
 	fmt.Fprintf(w, "<html><head><title>Index: %s/</title></head>\n", dir_)
-	fmt.Fprintf(w, "<body><h1>Index: %s/</h1>\n", dir_)
-	fmt.Fprint(w, "<ul>\n")
+	fmt.Fprintf(w, "<body><h1>Index: %s</h1>\n", dir_)
+	io.WriteString(w, "<ul>\n")
 	for _, entry := range files {
 		name := entry.Name()
 		slash := ""
 		if entry.IsDir() {
 			slash = "/"
 		}
-		// path := filepath.ToSlash(filepath.Join(dir, name))
 		fmt.Fprintf(w, "<li><a href=\"%s%s\">%s%s",
 			url.PathEscape(name),
 			slash,
@@ -93,12 +90,12 @@ func (handler *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir 
 			slash)
 		io.WriteString(w, "</a></li>\n")
 	}
-	fmt.Fprint(w, "</ul>\n")
+	io.WriteString(w, "</ul>\n")
 	fmt.Fprintf(w, "<form action=\"%s\" method=\"POST\">\n", dir_)
 	fmt.Fprintf(w, "<input type=\"hidden\" name=\"dir\" value=\"%s\" />\n", dir_)
-	fmt.Fprint(w, "<input type=\"text\" name=\"p\" /><tt>.md</tt>\n")
-	fmt.Fprint(w, "<input type=\"submit\" name=\"a\" value=\"New\" />\n")
-	fmt.Fprint(w, "</form>\n")
+	io.WriteString(w, "<input type=\"text\" name=\"p\" /><tt>.md</tt>\n")
+	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"New\" />\n")
+	io.WriteString(w, "</form>\n")
 	io.WriteString(w, "</body></html>\n")
 	return nil
 }
@@ -114,7 +111,11 @@ func mains() error {
 			return err
 		}
 	}
-	handler := new(Handler)
+	root, err := os.OpenRoot(".")
+	if err != nil {
+		return err
+	}
+	handler := &Handler{root: root}
 	service := &http.Server{
 		Addr:           fmt.Sprintf(":%d", *flagP),
 		Handler:        handler,
@@ -123,7 +124,7 @@ func mains() error {
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	err := service.ListenAndServe()
+	err = service.ListenAndServe()
 	closeErr := service.Close()
 	if err != nil {
 		return err
