@@ -86,8 +86,8 @@ func markdownToHtml(source []byte) (io.WriterTo, error) {
 	return &buffer, err
 }
 
-func (h *Handler) catAsMarkdown(diskPath string, w http.ResponseWriter, req *http.Request) error {
-	source, err := h.ReadFile(diskPath)
+func (h *Handler) catAsMarkdown(w http.ResponseWriter, req *http.Request) error {
+	source, err := h.ReadFile(req.URL.Path)
 	if err != nil {
 		return err
 	}

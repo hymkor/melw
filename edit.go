@@ -98,5 +98,5 @@ func (h *Handler) actionCancel(w http.ResponseWriter, req *http.Request) error {
 		transfer(w, path.Dir(req.URL.Path))
 		return nil
 	}
-	return h.catAsMarkdown(req.URL.Path, w, req)
+	return h.catAsMarkdown(w, req)
 }

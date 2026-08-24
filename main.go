@@ -44,9 +44,9 @@ func (h *Handler) serveHTTP(w http.ResponseWriter, req *http.Request) error {
 		return err
 	}
 	if stat.IsDir() {
-		return h.listIndex(w, req, req.URL.Path)
+		return h.listIndex(w, req)
 	} else if strings.HasSuffix(req.URL.Path, ".md") {
-		return h.catAsMarkdown(req.URL.Path, w, req)
+		return h.catAsMarkdown(w, req)
 	} else {
 		return h.catFile(w, req)
 	}
@@ -62,18 +62,18 @@ func (h *Handler) catFile(w http.ResponseWriter, req *http.Request) error {
 	return nil
 }
 
-func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string) error {
+func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 	if !strings.HasSuffix(req.URL.Path, "/") {
 		http.Redirect(w, req, req.URL.Path+"/", http.StatusMovedPermanently)
 		return nil
 	}
-	files, err := h.ReadDir(dir)
+	files, err := h.ReadDir(req.URL.Path)
 	if err != nil {
 		return err
 	}
 	w.WriteHeader(http.StatusOK)
-	dir_ := html.EscapeString(dir)
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	dir_ := html.EscapeString(req.URL.Path)
 	fmt.Fprintf(w, "<html><head><title>Index: %s/</title></head>\n", dir_)
 	fmt.Fprintf(w, "<body><h1>Index: %s</h1>\n", dir_)
 	io.WriteString(w, "<ul>\n")
