@@ -39,6 +39,7 @@ func (h *Handler) doEdit(w http.ResponseWriter, req *http.Request, netPath strin
 		source = []byte{}
 	}
 	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
 	drawForm(w, req, netPath, string(source))
 	fmt.Fprintln(w, htmlFooter)
@@ -52,6 +53,7 @@ func (h *Handler) actionPreview(w http.ResponseWriter, req *http.Request) error 
 		return err
 	}
 	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
 	drawForm(w, req, req.URL.Path, source)
 	htmls.WriteTo(w)
@@ -60,8 +62,11 @@ func (h *Handler) actionPreview(w http.ResponseWriter, req *http.Request) error 
 	return nil
 }
 
-func transfer(w io.Writer, newUrl string) {
+func transfer(w http.ResponseWriter, newUrl string) {
 	newUrl = html.EscapeString(newUrl)
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 
 	io.WriteString(w, "<html><head>\n")
 	fmt.Fprintf(w, "<meta http-equiv=\"refresh\" content=\"1;URL=%s\">\n", newUrl)
@@ -83,7 +88,6 @@ func (h *Handler) actionSave(w http.ResponseWriter, req *http.Request) error {
 	if err != nil {
 		return err
 	}
-	w.WriteHeader(http.StatusOK)
 	transfer(w, newUrl)
 	return nil
 }

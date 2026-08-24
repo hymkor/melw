@@ -71,9 +71,9 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request, dir string
 	if err != nil {
 		return err
 	}
-	w.Header().Add("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
 	dir_ := html.EscapeString(dir)
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, "<html><head><title>Index: %s/</title></head>\n", dir_)
 	fmt.Fprintf(w, "<body><h1>Index: %s</h1>\n", dir_)
 	io.WriteString(w, "<ul>\n")

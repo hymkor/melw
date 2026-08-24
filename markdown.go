@@ -96,6 +96,7 @@ func (h *Handler) catAsMarkdown(diskPath string, w http.ResponseWriter, req *htt
 		return err
 	}
 	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
 	io.WriteString(w, "<div style=\"float:right\">\n")
 	io.WriteString(w, "<a href=\"/\">Index</a>\n")
