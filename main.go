@@ -73,9 +73,9 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprintf(w, htmlHeader, gitHubCss)
 	dir_ := html.EscapeString(req.URL.Path)
-	fmt.Fprintf(w, "<html><head><title>Index: %s</title></head>\n", dir_)
-	io.WriteString(w, "<body><h1>Index: ")
+	io.WriteString(w, "<h1>Index: ")
 	printNestPath(w, req.URL.Path)
 	io.WriteString(w, "</h1><ul>\n")
 	for _, entry := range files {
@@ -97,7 +97,7 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 	io.WriteString(w, "<input type=\"text\" name=\"p\" /><tt>.md</tt>\n")
 	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"New\" />\n")
 	io.WriteString(w, "</form>\n")
-	io.WriteString(w, "</body></html>\n")
+	fmt.Fprintln(w, htmlFooter)
 	return nil
 }
 
