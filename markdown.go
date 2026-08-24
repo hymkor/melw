@@ -99,7 +99,7 @@ func (h *Handler) catAsMarkdown(w http.ResponseWriter, req *http.Request) error 
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
 	io.WriteString(w, "<div style=\"float:right\">\n")
-	io.WriteString(w, "<a href=\"/\">Index</a>\n")
+	printNestPath(w, req.URL.Path)
 	io.WriteString(w, "</div>\n")
 	fmt.Fprintf(w, "<form method=\"POST\" action=\"%s\">\n",
 		html.EscapeString(req.URL.Path))

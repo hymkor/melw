@@ -75,8 +75,9 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	dir_ := html.EscapeString(req.URL.Path)
 	fmt.Fprintf(w, "<html><head><title>Index: %s</title></head>\n", dir_)
-	fmt.Fprintf(w, "<body><h1>Index: %s</h1>\n", dir_)
-	io.WriteString(w, "<ul>\n")
+	io.WriteString(w, "<body><h1>Index: ")
+	printNestPath(w, req.URL.Path)
+	io.WriteString(w, "</h1><ul>\n")
 	for _, entry := range files {
 		name := entry.Name()
 		slash := ""
