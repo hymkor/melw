@@ -7,7 +7,48 @@ Melw is a tool for browsing local files with a web user interface like a WikiEng
 Install
 -------
 
-    go install github.com/hymkor/melw@latest
+### Manual Installation
+
+Download the binary package from [Releases](https://github.com/hymkor/melw/releases) and extract the executable.
+
+<!-- go run github.com/hymkor/example-into-readme/cmd/how2install@master | -->
+
+### Use [eget] installer (cross-platform)
+
+```sh
+brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
+
+cd (YOUR-BIN-DIRECTORY)
+eget hymkor/melw
+```
+
+[eget]: https://github.com/zyedidia/eget
+
+### Use [scoop]-installer (Windows only)
+
+```
+scoop install https://raw.githubusercontent.com/hymkor/melw/master/melw.json
+```
+
+or
+
+```
+scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
+scoop install melw
+```
+
+[scoop]: https://scoop.sh/
+
+### Use "go install" (requires Go toolchain)
+
+```
+go install github.com/hymkor/melw@latest
+```
+
+Note: `go install` places the executable in `$HOME/go/bin` or `$GOPATH/bin`, so you need to add this directory to your `$PATH` to run `melw`.
+<!-- -->
 
 
 Usage
