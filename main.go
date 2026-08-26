@@ -12,6 +12,8 @@ import (
 	"path"
 	"strings"
 	"time"
+	"path/filepath"
+	"runtime"
 )
 
 var jumpTable = map[string]func(h *Handler, w http.ResponseWriter, req *http.Request) error{
@@ -135,6 +137,12 @@ func mains() error {
 }
 
 func main() {
+	fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
+		filepath.Base(os.Args[0]),
+		version,
+		runtime.GOOS,
+		runtime.GOARCH,
+		runtime.Version())
 	flag.Parse()
 	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
