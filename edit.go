@@ -100,5 +100,5 @@ func (h *Handler) actionCancel(w http.ResponseWriter, req *http.Request) error {
 		transfer(w, path.Dir(req.URL.Path))
 		return nil
 	}
-	return h.catAsMarkdown(w, req)
+	return h.serveMarkdown(w, req)
 }

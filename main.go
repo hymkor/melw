@@ -49,7 +49,7 @@ func (h *Handler) serveHTTP(w http.ResponseWriter, req *http.Request) error {
 	if stat.IsDir() {
 		return h.listIndex(w, req)
 	} else if ext := path.Ext(req.URL.Path); strings.EqualFold(ext, ".md") || strings.EqualFold(ext, ".mkd") {
-		return h.catAsMarkdown(w, req)
+		return h.serveMarkdown(w, req)
 	} else {
 		return h.serveFile(w, req)
 	}
