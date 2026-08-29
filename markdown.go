@@ -95,8 +95,7 @@ func (h *Handler) catAsMarkdown(w http.ResponseWriter, req *http.Request) error 
 	if err != nil {
 		return err
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	showOK(w)
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
 	io.WriteString(w, "<div style=\"float:right\">\n")
 	printNestPath(w, req.URL.Path)

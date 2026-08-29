@@ -69,8 +69,7 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 	if err != nil {
 		return err
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	showOK(w)
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
 	dir_ := html.EscapeString(req.URL.Path)
 	io.WriteString(w, "<h1>Index: ")
