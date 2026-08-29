@@ -10,10 +10,10 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"strings"
-	"time"
 	"path/filepath"
 	"runtime"
+	"strings"
+	"time"
 )
 
 var jumpTable = map[string]func(h *Handler, w http.ResponseWriter, req *http.Request) error{
@@ -51,17 +51,12 @@ func (h *Handler) serveHTTP(w http.ResponseWriter, req *http.Request) error {
 	} else if ext := path.Ext(req.URL.Path); strings.EqualFold(ext, ".md") || strings.EqualFold(ext, ".mkd") {
 		return h.catAsMarkdown(w, req)
 	} else {
-		return h.catFile(w, req)
+		return h.serveFile(w, req)
 	}
 }
 
-func (h *Handler) catFile(w http.ResponseWriter, req *http.Request) error {
-	fd, err := h.Open(req.URL.Path)
-	if err != nil {
-		return err
-	}
-	defer fd.Close()
-	io.Copy(w, fd)
+func (h *Handler) serveFile(w http.ResponseWriter, req *http.Request) error {
+	http.ServeFileFS(w, req, h.root.FS(), req.URL.Path)
 	return nil
 }
 
@@ -127,7 +122,6 @@ func mains() error {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-
 	err = service.ListenAndServe()
 	closeErr := service.Close()
 	if err != nil {
