@@ -9,17 +9,23 @@ import (
 	"strings"
 )
 
-func drawForm(w http.ResponseWriter, req *http.Request, netPath, source string) {
+func drawForm(w http.ResponseWriter, req *http.Request, netPath, source string) error {
 	path_ := html.EscapeString(netPath)
 	fmt.Fprintf(w, "<h1>Edit: %s</h1>\n", path_)
 	fmt.Fprintf(w, "<form action=\"%s\" method=\"POST\">\n", path_)
-	fmt.Fprintf(w, "<textarea name=\"text\" style=\"width:100%%\" cols=\"80\" rows=\"20\">%s</textarea>\n",
+	fmt.Fprintf(w, "<textarea name=\"text\" style=\"width:100%%\" cols=\"80\" rows=\"20\" hx-post=\"?a=RawPreview\" hx-trigger=\"input changed delay:500ms\" hx-target=\"#preview\" hx-swap=\"innerHTML\">%s</textarea>\n",
 		html.EscapeString(source))
-	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Preview\" />\n")
 	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Save\" />\n")
 	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Cancel\" style=\"float:right\" />\n")
 	io.WriteString(w, "</form>\n")
-
+	htmls, err := markdownToHtml([]byte(source))
+	if err != nil {
+		return err
+	}
+	io.WriteString(w, "<div id=\"preview\"></div>\n")
+	htmls.WriteTo(w)
+	io.WriteString(w, "</div>\n")
+	return nil
 }
 
 func (h *Handler) actionNew(w http.ResponseWriter, req *http.Request) error {
@@ -45,23 +51,19 @@ func (h *Handler) doEdit(w http.ResponseWriter, req *http.Request, netPath strin
 	}
 	showOK(w)
 	fmt.Fprintf(w, htmlHeader, gitHubCss)
-	drawForm(w, req, netPath, string(source))
+	err = drawForm(w, req, netPath, string(source))
 	fmt.Fprintln(w, htmlFooter)
-	return nil
+	return err
 }
 
-func (h *Handler) actionPreview(w http.ResponseWriter, req *http.Request) error {
+func (h *Handler) actionRawPreview(w http.ResponseWriter, req *http.Request) error {
 	source := req.FormValue("text")
 	htmls, err := markdownToHtml([]byte(source))
 	if err != nil {
 		return err
 	}
 	showOK(w)
-	fmt.Fprintf(w, htmlHeader, gitHubCss)
-	drawForm(w, req, req.URL.Path, source)
 	htmls.WriteTo(w)
-
-	fmt.Fprintln(w, htmlFooter)
 	return nil
 }
 

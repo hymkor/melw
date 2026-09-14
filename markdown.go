@@ -22,6 +22,7 @@ var gitHubCss string
 
 const htmlHeader = `<html>
 <head>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
 <style type="text/css"><!--
 %s
 	.markdown-body {
