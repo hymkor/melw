@@ -116,6 +116,7 @@ var markdownOptions = []goldmark.Option{
 			})),
 		extension.TaskList,
 		extension.Footnote,
+		extension.Strikethrough,
 		meta.New(meta.WithTable())),
 }
 
