@@ -70,7 +70,7 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 		return err
 	}
 	showOK(w)
-	fmt.Fprintf(w, htmlHeader, gitHubCss)
+	fmt.Fprintf(w, htmlHeader1, gitHubCss)
 	dir_ := html.EscapeString(req.URL.Path)
 	io.WriteString(w, "<h1>Index: ")
 	printNestPath(w, req.URL.Path)
