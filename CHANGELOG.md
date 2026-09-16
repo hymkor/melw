@@ -1,5 +1,12 @@
 Changelog
 ========
+( English / [Japanese](./CHANGELOG_ja.md) )
+
+------
+
+- Removed the `Preview` button and enabled real-time preview updates. (#2-1)
+- The editing screen now displays the Markdown source on the left and the rendered result on the right. (#2-2)
+- Enabled strikethrough using `~~`. (#2-3)
 
 v0.1.0
 ------

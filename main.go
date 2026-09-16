@@ -17,11 +17,11 @@ import (
 )
 
 var jumpTable = map[string]func(h *Handler, w http.ResponseWriter, req *http.Request) error{
-	"Edit":    (*Handler).actionEdit,
-	"Preview": (*Handler).actionPreview,
-	"Save":    (*Handler).actionSave,
-	"New":     (*Handler).actionNew,
-	"Cancel":  (*Handler).actionCancel,
+	"Edit":       (*Handler).actionEdit,
+	"Save":       (*Handler).actionSave,
+	"New":        (*Handler).actionNew,
+	"Cancel":     (*Handler).actionCancel,
+	"RawPreview": (*Handler).actionRawPreview,
 }
 
 func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -70,7 +70,7 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 		return err
 	}
 	showOK(w)
-	fmt.Fprintf(w, htmlHeader, gitHubCss)
+	fmt.Fprintf(w, htmlHeader1, gitHubCss)
 	dir_ := html.EscapeString(req.URL.Path)
 	io.WriteString(w, "<h1>Index: ")
 	printNestPath(w, req.URL.Path)

@@ -9,17 +9,30 @@ import (
 	"strings"
 )
 
-func drawForm(w http.ResponseWriter, req *http.Request, netPath, source string) {
+func drawForm(w http.ResponseWriter, req *http.Request, netPath, source string) error {
 	path_ := html.EscapeString(netPath)
-	fmt.Fprintf(w, "<h1>Edit: %s</h1>\n", path_)
 	fmt.Fprintf(w, "<form action=\"%s\" method=\"POST\">\n", path_)
-	fmt.Fprintf(w, "<textarea name=\"text\" style=\"width:100%%\" cols=\"80\" rows=\"20\">%s</textarea>\n",
+	defer io.WriteString(w, "</form>\n")
+	io.WriteString(w, "<div class=\"editor\">\n")
+	defer io.WriteString(w, "</div>\n") // close editor
+	io.WriteString(w, "<div class=\"editor-pane\">\n")
+	fmt.Fprintf(w, "<h1>Edit: %s</h1>\n", path_)
+	fmt.Fprintf(w, "<textarea name=\"text\" hx-post=\"?a=RawPreview\" hx-trigger=\"input changed delay:500ms\" hx-target=\"#preview\" hx-swap=\"innerHTML\">%s</textarea>\n",
 		html.EscapeString(source))
-	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Preview\" />\n")
+	io.WriteString(w, "<div class=\"buttons\">\n")
 	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Save\" />\n")
 	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"Cancel\" style=\"float:right\" />\n")
-	io.WriteString(w, "</form>\n")
-
+	io.WriteString(w, "</div>\n") // close class=buttons
+	io.WriteString(w, "</div>\n") // close class=editor-pane
+	htmls, err := markdownToHtml([]byte(source))
+	if err != nil {
+		return err
+	}
+	io.WriteString(w, "<div class=\"preview-pane\" id=\"preview\">\n")
+	htmls.WriteTo(w)
+	io.WriteString(w, copyright)
+	io.WriteString(w, "</div>\n") // close preview-pane
+	return nil
 }
 
 func (h *Handler) actionNew(w http.ResponseWriter, req *http.Request) error {
@@ -44,24 +57,20 @@ func (h *Handler) doEdit(w http.ResponseWriter, req *http.Request, netPath strin
 		source = []byte{}
 	}
 	showOK(w)
-	fmt.Fprintf(w, htmlHeader, gitHubCss)
-	drawForm(w, req, netPath, string(source))
-	fmt.Fprintln(w, htmlFooter)
-	return nil
+	fmt.Fprintf(w, htmlHeader2, gitHubCss)
+	err = drawForm(w, req, netPath, string(source))
+	fmt.Fprintln(w, "</body></html>\n")
+	return err
 }
 
-func (h *Handler) actionPreview(w http.ResponseWriter, req *http.Request) error {
+func (h *Handler) actionRawPreview(w http.ResponseWriter, req *http.Request) error {
 	source := req.FormValue("text")
 	htmls, err := markdownToHtml([]byte(source))
 	if err != nil {
 		return err
 	}
 	showOK(w)
-	fmt.Fprintf(w, htmlHeader, gitHubCss)
-	drawForm(w, req, req.URL.Path, source)
 	htmls.WriteTo(w)
-
-	fmt.Fprintln(w, htmlFooter)
 	return nil
 }
 
