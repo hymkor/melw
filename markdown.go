@@ -8,11 +8,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/yuin/goldmark-meta/v2"
 	"github.com/yuin/goldmark/v2/extension"
 	"github.com/yuin/goldmark/v2/parser"
 	goldmarkHTML "github.com/yuin/goldmark/v2/renderer/html"
-	// "github.com/hymkor/goldmark-mb-headingids"
 )
 
 //go:embed github.css
@@ -118,15 +116,10 @@ func setMarkdownOptions(enableHTML bool, hardwrap bool) {
 			extension.NewTaskListItemParser(),
 			extension.NewFootnoteParser(),
 			extension.NewStrikethroughParser(),
-			meta.Parser,
 		),
 	}
 
-	rendererOptions := []goldmarkHTML.Option{
-		goldmarkHTML.WithExtensions(
-			meta.NewHTMLRenderer(meta.WithTable()),
-		),
-	}
+	rendererOptions := []goldmarkHTML.Option{}
 
 	if enableHTML {
 		rendererOptions = append(rendererOptions, goldmarkHTML.WithUnsafe())
@@ -143,9 +136,7 @@ func markdownToHtml(source []byte) (io.WriterTo, error) {
 	if markdownParser == nil {
 		setMarkdownOptions(false, false)
 	}
-	//mdCtx := parser.NewContext(parser.WithIDs(headingids.New()))
 	var buffer bytes.Buffer
-	//err := markdownReader.Convert(source, &buffer, parser.WithContext(mdCtx))
 	doc := markdownParser.Parse(source)
 	err := markdownRenderer.Render(&buffer, source, doc)
 	return &buffer, err
