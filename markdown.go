@@ -8,13 +8,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark-meta"
-	"github.com/yuin/goldmark/extension"
-	"github.com/yuin/goldmark/parser"
-	goldmarkHtml "github.com/yuin/goldmark/renderer/html"
-
-	"github.com/hymkor/goldmark-mb-headingids"
+	"github.com/yuin/goldmark-meta/v2"
+	"github.com/yuin/goldmark/v2/extension"
+	"github.com/yuin/goldmark/v2/parser"
+	goldmarkHTML "github.com/yuin/goldmark/v2/renderer/html"
+	// "github.com/hymkor/goldmark-mb-headingids"
 )
 
 //go:embed github.css
@@ -102,43 +100,54 @@ and <a href="https://github.com/sindresorhus/github-markdown-css">github-markdow
 
 const htmlFooter = copyright + "</body></html>"
 
-var markdownReader goldmark.Markdown
+var (
+	markdownParser   parser.Parser
+	markdownRenderer goldmarkHTML.Renderer
+)
 
-var markdownOptions = []goldmark.Option{
-	goldmark.WithParserOptions(
-		parser.WithAutoHeadingID()),
-	goldmark.WithExtensions(
-		extension.Table,
-		extension.NewLinkify(
-			extension.WithLinkifyAllowedProtocols([][]byte{
-				[]byte("http:"),
-				[]byte("https:"),
-			})),
-		extension.TaskList,
-		extension.Footnote,
-		extension.Strikethrough,
-		meta.New(meta.WithTable())),
-}
+func setMarkdownOptions(enableHTML bool, hardwrap bool) {
+	parserOptions := []parser.Option{
+		parser.WithAutoHeadingID(),
+		parser.WithExtensions(
+			extension.NewTableParser(),
+			extension.NewLinkifyParser(
+				extension.WithAllowedProtocols(
+					[]string{"http:", "https:"},
+				),
+			),
+			extension.NewTaskListItemParser(),
+			extension.NewFootnoteParser(),
+			extension.NewStrikethroughParser(),
+			meta.Parser,
+		),
+	}
 
-func setMarkdownOptions(enableHtml bool, hardwrap bool) {
-	if enableHtml {
-		markdownOptions = append(markdownOptions,
-			goldmark.WithRendererOptions(goldmarkHtml.WithUnsafe()))
+	rendererOptions := []goldmarkHTML.Option{
+		goldmarkHTML.WithExtensions(
+			meta.NewHTMLRenderer(meta.WithTable()),
+		),
+	}
+
+	if enableHTML {
+		rendererOptions = append(rendererOptions, goldmarkHTML.WithUnsafe())
 	}
 	if hardwrap {
-		markdownOptions = append(markdownOptions,
-			goldmark.WithRendererOptions(goldmarkHtml.WithHardWraps()))
+		rendererOptions = append(rendererOptions, goldmarkHTML.WithHardWraps())
 	}
-	markdownReader = goldmark.New(markdownOptions...)
+
+	markdownParser = parser.New(parserOptions...)
+	markdownRenderer = goldmarkHTML.New(rendererOptions...)
 }
 
 func markdownToHtml(source []byte) (io.WriterTo, error) {
-	if markdownReader == nil {
+	if markdownParser == nil {
 		setMarkdownOptions(false, false)
 	}
-	mdCtx := parser.NewContext(parser.WithIDs(headingids.New()))
+	//mdCtx := parser.NewContext(parser.WithIDs(headingids.New()))
 	var buffer bytes.Buffer
-	err := markdownReader.Convert(source, &buffer, parser.WithContext(mdCtx))
+	//err := markdownReader.Convert(source, &buffer, parser.WithContext(mdCtx))
+	doc := markdownParser.Parse(source)
+	err := markdownRenderer.Render(&buffer, source, doc)
 	return &buffer, err
 }
 
