@@ -1,6 +1,6 @@
 Melw - Markdown Editor Like WikiEngine
 ======================================
-[English](./README.md) / Japanese
+( [English](./README.md) / Japanese )
 
 Melw は、WikiEngine のような Web ユーザインターフェイスで、
 ローカルの Markdown ファイルを編集するための小さな Web アプリケーションです。
@@ -8,7 +8,7 @@ Melw は、WikiEngine のような Web ユーザインターフェイスで、
 * localhost で Web サーバーを起動して動作します。
 * ローカルのファイルを直接読み書きします。
 * 編集には通常の `textarea` を使用します。
-* JavaScript は使用していません。
+* ~~JavaScript は使用していません。~~__[HTMX](https://htmx.org/)使用__
 * データベースや独自のファイル形式は使用しません。
 
 
@@ -69,7 +69,8 @@ go install github.com/hymkor/melw@latest
    - Markdown ファイルへのリンクをクリックすると、その内容をレンダリングした画面が表示されます。
    - Markdown ファイル以外へのリンクをクリックすると、そのファイルの内容がそのまま表示されます。
 4. Markdown ファイルのページで `Edit` ボタンを押すと、そのページのソースを編集する画面になります。
-   - `Preview` ボタンを押すと、編集したソースをレンダリングした結果をプレビューできます。
+   - ~~`Preview` ボタンを押すと、編集したソースをレンダリングした結果をプレビューできます。~~  
+     __現在はほぼリアルタイムにプレビューに反映__
    - `Save` ボタンを押すと、編集したソースをファイルに反映して、編集を終了します。
    - `Cancel` ボタンを押すと、編集を中止し、編集内容を破棄します。
 
