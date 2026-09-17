@@ -11,6 +11,9 @@ with a WikiEngine-like user interface.
 - ~~Requires no JavaScript.~~ __Uses [HTMX](https://htmx.org/)__
 - Uses no database or proprietary file format.
 
+
+![](image.png)
+
 Install
 -------
 
@@ -72,8 +75,3 @@ Usage
      __The preview is updated almost in real time while editing.__
    - Click `Save` to save the edited source to the file and finish editing.
    - Click `Cancel` to cancel editing and discard the changes.
-
-Screenshot
-----------
-
-![](image.png)
