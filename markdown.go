@@ -119,7 +119,14 @@ func setMarkdownOptions(enableHTML bool, hardwrap bool) {
 		),
 	}
 
-	rendererOptions := []goldmarkHTML.Option{}
+	rendererOptions := []goldmarkHTML.Option{
+		goldmarkHTML.WithExtensions(
+			extension.TableHTMLRenderer,
+			extension.TaskListItemHTMLRenderer,
+			extension.FootnoteHTMLRenderer,
+			extension.StrikethroughHTMLRenderer,
+		),
+	}
 
 	if enableHTML {
 		rendererOptions = append(rendererOptions, goldmarkHTML.WithUnsafe())
