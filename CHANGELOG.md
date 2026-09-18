@@ -2,6 +2,10 @@ Changelog
 ========
 ( English / [Japanese](./CHANGELOG_ja.md) )
 
+v0.3.0
+------
+Sep 18, 2026
+
 - Added the `-start` option to open a web browser when starting the server. (#6)
 
 v0.2.0

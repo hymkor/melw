@@ -75,3 +75,12 @@ Usage
      __The preview is updated almost in real time while editing.__
    - Click `Save` to save the edited source to the file and finish editing.
    - Click `Cancel` to cancel editing and discard the changes.
+
+### Options
+
+- -C string  
+    Change working directory
+- -P uint  
+    Port number (default 8000)
+- -start  
+    Open web browser at startup

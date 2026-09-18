@@ -2,6 +2,10 @@ Changelog
 ========
 ( [English](./CHANGELOG.md) / Japanese )
 
+v0.3.0
+------
+Sep 18, 2026
+
 - サーバー起動と同時に、ウェブブラウザを開くオプション `-start` を追加 (#6)
 
 v0.2.0
