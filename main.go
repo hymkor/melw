@@ -6,6 +6,7 @@ import (
 	"html"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -14,6 +15,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/pkg/browser"
 )
 
 var jumpTable = map[string]func(h *Handler, w http.ResponseWriter, req *http.Request) error{
@@ -99,8 +102,9 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 }
 
 var (
-	flagC = flag.String("C", "", "Change working directory")
-	flagP = flag.Uint("P", 8000, "Port")
+	flagC     = flag.String("C", "", "Change working directory")
+	flagP     = flag.Uint("P", 8000, "Port number")
+	flagStart = flag.Bool("start", false, "Open web browser at startup")
 )
 
 func mains() error {
@@ -113,15 +117,27 @@ func mains() error {
 	if err != nil {
 		return err
 	}
+
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", *flagP))
+	if err != nil {
+		return err
+	}
+	if *flagStart {
+		url := "http://" + listener.Addr().String() + "/"
+		go func() {
+			if err := browser.OpenURL(url); err != nil {
+				log.Printf("cannot open browser: %v", err)
+			}
+		}()
+	}
 	handler := &Handler{root: root}
 	service := &http.Server{
-		Addr:           fmt.Sprintf(":%d", *flagP),
 		Handler:        handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	err = service.ListenAndServe()
+	err = service.Serve(listener)
 	closeErr := service.Close()
 	if err != nil {
 		return err
