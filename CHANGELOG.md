@@ -2,6 +2,9 @@ Changelog
 ========
 ( English / [Japanese](./CHANGELOG_ja.md) )
 
+- Show Markdown files only by default; use `?all` to show all files. (#8)
+- Added a `(Markdown Only / All)` toggle to switch between the two modes. (#8)
+
 v0.3.0
 ------
 Sep 18, 2026

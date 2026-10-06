@@ -2,6 +2,9 @@ Changelog
 ========
 ( [English](./CHANGELOG.md) / Japanese )
 
+- デフォルトでは markdown のみを一覧するようにし、全てのファイルを表示するには `?all` を使うようにした。 (#8)
+- モード切り替えのため、`(Markdown Only / All)` というスイッチを表示するようにした。 (#8)
+
 v0.3.0
 ------
 Sep 18, 2026
