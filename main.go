@@ -68,6 +68,7 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 		http.Redirect(w, req, req.URL.Path+"/", http.StatusMovedPermanently)
 		return nil
 	}
+	all := req.URL.Query().Has("all")
 	files, err := h.ReadDir(req.URL.Path)
 	if err != nil {
 		return err
@@ -77,9 +78,23 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 	dir_ := html.EscapeString(req.URL.Path)
 	io.WriteString(w, "<h1>Index: ")
 	printNestPath(w, req.URL.Path)
-	io.WriteString(w, "</h1><ul>\n")
+	io.WriteString(w, "</h1><p>\n")
+	if all {
+		fmt.Fprintf(w, "( <a href=\"%s\">Markdown Only</a> / <strong>All</strong> )\n", req.URL.Path)
+	} else {
+		fmt.Fprintf(w, "( <strong>Markdown Only</strong> / <a href=\"%s?all\">All</a> )\n", req.URL.Path)
+	}
+	io.WriteString(w, "</p><ul>\n")
 	for _, entry := range files {
 		name := entry.Name()
+		if !all {
+			if name[0] == '.' {
+				continue
+			}
+			if !strings.EqualFold(path.Ext(name), ".md") {
+				continue
+			}
+		}
 		slash := ""
 		if entry.IsDir() {
 			slash = "/"
