@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"io"
@@ -12,7 +13,8 @@ import (
 )
 
 type Handler struct {
-	root *os.Root
+	root   *os.Root
+	cancel context.CancelFunc
 }
 
 func trimHeadRoot(path string) string {
