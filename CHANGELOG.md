@@ -2,6 +2,8 @@ Changelog
 ========
 ( English / [Japanese](./CHANGELOG_ja.md) )
 
+- Added a `Shutdown Service` link to stop the web server. (#10)
+
 v0.4.0
 ------
 Oct 7, 2026
