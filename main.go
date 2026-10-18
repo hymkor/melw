@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"html"
@@ -25,6 +27,7 @@ var jumpTable = map[string]func(h *Handler, w http.ResponseWriter, req *http.Req
 	"New":        (*Handler).actionNew,
 	"Cancel":     (*Handler).actionCancel,
 	"RawPreview": (*Handler).actionRawPreview,
+	"Shutdown":   (*Handler).actionShutdown,
 }
 
 func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -112,7 +115,15 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 	io.WriteString(w, "<input type=\"text\" name=\"p\" /><tt>.md</tt>\n")
 	io.WriteString(w, "<input type=\"submit\" name=\"a\" value=\"New\" />\n")
 	io.WriteString(w, "</form>\n")
+	io.WriteString(w, "<a href=\"?a=Shutdown\">Shutdown Service</a>\n")
 	fmt.Fprintln(w, htmlFooter)
+	return nil
+}
+
+func (h *Handler) actionShutdown(w http.ResponseWriter, req *http.Request) error {
+	showOK(w)
+	io.WriteString(w, "<html><body>Start to shutdown</body></html>")
+	h.cancel()
 	return nil
 }
 
@@ -145,16 +156,27 @@ func mains() error {
 			}
 		}()
 	}
-	handler := &Handler{root: root}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	handler := &Handler{
+		root:   root,
+		cancel: cancel,
+	}
 	service := &http.Server{
 		Handler:        handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+
+	go func() {
+		<-ctx.Done()
+		service.Shutdown(context.Background())
+	}()
+
 	err = service.Serve(listener)
 	closeErr := service.Close()
-	if err != nil {
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 	return closeErr

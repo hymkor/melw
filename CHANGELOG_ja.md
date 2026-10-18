@@ -2,6 +2,8 @@ Changelog
 ========
 ( [English](./CHANGELOG.md) / Japanese )
 
+- サービスを終了するリンクを追加 (#10)
+
 v0.4.0
 ------
 Oct 7, 2026
