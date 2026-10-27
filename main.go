@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -122,7 +123,7 @@ func (h *Handler) listIndex(w http.ResponseWriter, req *http.Request) error {
 
 func (h *Handler) actionShutdown(w http.ResponseWriter, req *http.Request) error {
 	showOK(w)
-	io.WriteString(w, "<html><body>Start to shutdown</body></html>")
+	io.WriteString(w, "<html><body>Stopping web server...</body></html>")
 	h.cancel()
 	return nil
 }
@@ -157,6 +158,8 @@ func mains() error {
 		}()
 	}
 	ctx, cancel := context.WithCancel(context.Background())
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
+	defer stop()
 	defer cancel()
 	handler := &Handler{
 		root:   root,
@@ -189,9 +192,11 @@ func main() {
 		runtime.GOOS,
 		runtime.GOARCH,
 		runtime.Version())
+	log.Print("Starting web server")
 	flag.Parse()
 	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
+	log.Print("Web server stopped")
 }
