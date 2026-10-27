@@ -3,6 +3,7 @@ Changelog
 ( [English](./CHANGELOG.md) / Japanese )
 
 - サービスを終了するリンクを追加 (#10)
+- Ctrl-C で終了リンクと同様に綺麗に終了させるようにした (#11)
 
 v0.4.0
 ------
