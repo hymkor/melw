@@ -3,6 +3,7 @@ Changelog
 ( English / [Japanese](./CHANGELOG_ja.md) )
 
 - Added a `Shutdown Service` link to stop the web server. (#10)
+- Support graceful shutdown via Ctrl-C as well as the `Shutdown Service` link. (#11)
 
 v0.4.0
 ------
