@@ -29,6 +29,7 @@ var jumpTable = map[string]func(h *Handler, w http.ResponseWriter, req *http.Req
 	"Cancel":     (*Handler).actionCancel,
 	"RawPreview": (*Handler).actionRawPreview,
 	"Shutdown":   (*Handler).actionShutdown,
+	"Sleep":      (*Handler).actionSleep,
 }
 
 func (handler *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -128,11 +129,41 @@ func (h *Handler) actionShutdown(w http.ResponseWriter, req *http.Request) error
 	return nil
 }
 
+func (h *Handler) actionSleep(w http.ResponseWriter, req *http.Request) error {
+	showOK(w)
+	io.WriteString(w, "<html><body>Sleeping 100 seconds</body></html>")
+	log.Print("Sleeping 100 seconds")
+	time.Sleep(100 * time.Second)
+	return nil
+}
+
 var (
 	flagC     = flag.String("C", "", "Change working directory")
 	flagP     = flag.Uint("P", 8000, "Port number")
 	flagStart = flag.Bool("start", false, "Open web browser at startup")
 )
+
+const timeoutSeconds = 5
+
+func handleCtrlC(ctx context.Context, service *http.Server) (
+	context.Context, context.CancelFunc) {
+
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
+
+	go func() {
+		<-ctx.Done()
+		stop()
+		_ctx, _cancel := context.WithTimeout(
+			context.Background(),
+			timeoutSeconds*time.Second)
+		defer _cancel()
+
+		if err := service.Shutdown(_ctx); err != nil {
+			log.Printf("Shutdown: %v", err)
+		}
+	}()
+	return ctx, stop
+}
 
 func mains() error {
 	if *flagC != "" {
@@ -158,24 +189,21 @@ func mains() error {
 		}()
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
-	defer stop()
 	defer cancel()
+
 	handler := &Handler{
 		root:   root,
 		cancel: cancel,
 	}
+
 	service := &http.Server{
 		Handler:        handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-
-	go func() {
-		<-ctx.Done()
-		service.Shutdown(context.Background())
-	}()
+	ctx, stop := handleCtrlC(ctx, service)
+	defer stop()
 
 	err = service.Serve(listener)
 	closeErr := service.Close()
