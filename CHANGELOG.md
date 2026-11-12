@@ -6,6 +6,7 @@ Changelog
 - Support graceful shutdown via Ctrl-C as well as the `Shutdown Service` link. (#11, #12)
 - Replace GitHub Markdown CSS with a simpler, lightweight stylesheet (#13)
 - Log the local URL when the web server starts and a message when it stops (#14)
+- Support FreeBSD and macOS experimantally (#15)
 
 v0.4.0
 ------
