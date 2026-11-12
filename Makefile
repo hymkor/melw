@@ -31,9 +31,6 @@ dist:
 bump:
 	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc main CHANGELOG*.md > version.go
 
-github.css :
-	curl https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown-light.css > github.css
-
 release:
 	$(GO) run github.com/hymkor/latest-notes@latest | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
