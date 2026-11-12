@@ -2,6 +2,10 @@ Changelog
 ========
 ( English / [Japanese](./CHANGELOG_ja.md) )
 
+v0.5.0
+------
+Nov 12, 2026
+
 - Added a `Shutdown Service` link to stop the web server. (#10)
 - Support graceful shutdown via Ctrl-C as well as the `Shutdown Service` link. (#11, #12)
 - Replace GitHub Markdown CSS with a simpler, lightweight stylesheet (#13)
