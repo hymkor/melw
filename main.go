@@ -205,6 +205,10 @@ func mains() error {
 	ctx, stop := handleCtrlC(ctx, service)
 	defer stop()
 
+	//log.Printf("Starting web server: http://%s/", listener.Addr().String())
+	log.Printf("Starting web server: http://localhost:%d/", *flagP)
+	defer log.Print("Web server stopped")
+
 	err = service.Serve(listener)
 	closeErr := service.Close()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -220,11 +224,9 @@ func main() {
 		runtime.GOOS,
 		runtime.GOARCH,
 		runtime.Version())
-	log.Print("Starting web server")
 	flag.Parse()
 	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	log.Print("Web server stopped")
 }
