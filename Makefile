@@ -40,4 +40,13 @@ release:
 manifest:
 	$(GO) run github.com/hymkor/make-scoop-manifest@latest -all *-windows-*.zip > $(NAME).json
 
-.PHONY: all test dist _dist clean manifest release
+# MINIPAGE=$(GO) run github.com/hymkor/minipage@latest 
+MINIPAGE=minipage
+
+docs:
+	$(MINIPAGE) -title "Melw - Markdown Editor Like WikiEngine" -outline-in-sidebar -readme-to-index README.md > docs/index.html
+	$(MINIPAGE) -title "Melw - Markdown Editor Like WikiEngine" -outline-in-sidebar -readme-to-index README_ja.md > docs/index_ja.html
+	$(MINIPAGE) -title "Changelog" -outline-in-sidebar -readme-to-index CHANGELOG.md > docs/CHANGELOG.html
+	$(MINIPAGE) -title "Changelog" -outline-in-sidebar -readme-to-index CHANGELOG_ja.md > docs/CHANGELOG_ja.html
+
+.PHONY: all test dist _dist clean manifest release docs

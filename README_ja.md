@@ -83,3 +83,14 @@ go install github.com/hymkor/melw@latest
     ポート番号 (デフォルト 8000)
 - -start  
     サービス起動時にウェブブラウザを開く
+
+Changelog
+---------
+
+- [English](CHANGELOG.md)
+- [Japanese](CHANGELOG_ja.md)
+
+Author
+------
+
+- [hymkor (HAYAMA Kaoru)](https://github.com/hymkor)

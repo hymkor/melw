@@ -84,3 +84,14 @@ Usage
     Port number (default 8000)
 - -start  
     Open web browser at startup
+
+Changelog
+---------
+
+- [English](CHANGELOG.md)
+- [Japanese](CHANGELOG_ja.md)
+
+Author
+------
+
+- [hymkor (HAYAMA Kaoru)](https://github.com/hymkor)

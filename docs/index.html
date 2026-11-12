@@ -1,0 +1,235 @@
+<!DOCTYPE html><html><head>
+<title>Melw - Markdown Editor Like WikiEngine</title>
+<style type="text/css">
+.markdown-body {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-size: 16px;
+    line-height: 1.6;
+    color: #24292f;
+    max-width: 900px;
+    margin: auto;
+}
+
+.markdown-body h1,
+.markdown-body h2 {
+    border-bottom: 1px solid #d8dee4;
+    padding-bottom: .3em;
+    font-weight: 600;
+}
+
+.markdown-body h1 { font-size: 2em; }
+.markdown-body h2 { font-size: 1.5em; }
+.markdown-body h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+}
+
+.markdown-body b,
+.markdown-body strong {
+    font-weight: 600;
+}
+
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol {
+    margin: 0 0 1em;
+}
+
+.markdown-body a {
+    color: #0969da;
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+.markdown-body blockquote {
+    margin: 0 0 1em;
+    padding: 0 1em;
+    color: #57606a;
+    border-left: 4px solid #d0d7de;
+}
+
+.markdown-body pre {
+    padding: 1em;
+    overflow-x: auto;
+    background: #f6f8fa;
+    border-radius: 6px;
+    font-size: 85%;
+}
+
+.markdown-body code {
+    background: #eff1f3;
+    padding: .15em .3em;
+    border-radius: 3px;
+}
+
+.markdown-body pre code {
+    background: none;
+    padding: 0;
+}
+
+.markdown-body table {
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+}
+
+.markdown-body th,
+.markdown-body td {
+    border: 1px solid #d0d7de;
+    padding: .4em .8em;
+}
+
+.markdown-body th {
+    background: #f6f8fa;
+}
+
+.markdown-body img {
+    max-width: 100%;
+}
+
+.markdown-body hr {
+    border: 0;
+    border-top: 1px solid #d8dee4;
+}
+
+.markdown-body tt,
+.markdown-body code,
+.markdown-body pre {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
+
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
+
+</style>
+</head><body>
+<div class="main markdown-body">
+<h1 id="melw---markdown-editor-like-wikiengine">Melw - Markdown Editor Like WikiEngine</h1>
+<p>( English / <a href="./index_ja.html">Japanese</a> )</p>
+<p>Melw is a small, local web application for editing Markdown files
+with a WikiEngine-like user interface.</p>
+<ul>
+<li>Runs a web server on <code>localhost</code>.</li>
+<li>Directly edits Markdown files on the local filesystem.</li>
+<li>Uses a plain <code>textarea</code> for editing.</li>
+<li><del>Requires no JavaScript.</del> <strong>Uses <a href="https://htmx.org/">HTMX</a></strong></li>
+<li>Uses no database or proprietary file format.</li>
+</ul>
+<p><img src="image.png" alt="" /></p>
+<h2 id="install">Install</h2>
+<h3 id="manual-installation">Manual Installation</h3>
+<p>Download the binary package from <a href="https://github.com/hymkor/melw/releases">Releases</a> and extract the executable.</p>
+<!-- go run github.com/hymkor/example-into-readme/cmd/how2install@master | -->
+<h3 id="use-eget-installer-cross-platform">Use <a href="https://github.com/zyedidia/eget">eget</a> installer (cross-platform)</h3>
+<pre><code class="language-sh">brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
+
+cd (YOUR-BIN-DIRECTORY)
+eget hymkor/melw
+</code></pre>
+<h3 id="use-scoop-installer-windows-only">Use <a href="https://scoop.sh/">scoop</a>-installer (Windows only)</h3>
+<pre><code>scoop install https://raw.githubusercontent.com/hymkor/melw/master/melw.json
+</code></pre>
+<p>or</p>
+<pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
+scoop install melw
+</code></pre>
+<h3 id="use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</h3>
+<pre><code>go install github.com/hymkor/melw@latest
+</code></pre>
+<p>Note: <code>go install</code> places the executable in <code>$HOME/go/bin</code> or <code>$GOPATH/bin</code>, so you need to add this directory to your <code>$PATH</code> to run <code>melw</code>.</p>
+<!-- -->
+<h2 id="usage">Usage</h2>
+<ol>
+<li>Start the <code>melw</code> executable in a directory containing Markdown files.</li>
+<li>Open <a href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> in your browser.</li>
+<li>A list of files in the directory where melw was started will be displayed.
+<ul>
+<li>Clicking a link to a directory navigates to that directory.</li>
+<li>Clicking a link to a Markdown file displays its contents rendered as HTML.</li>
+<li>Clicking a link to a non-Markdown file displays its contents as-is.</li>
+</ul>
+</li>
+<li>On a Markdown file page, click the <code>Edit</code> button to edit the source of the page.
+<ul>
+<li><del>Click <code>Preview</code> to preview the edited source rendered as HTML.</del><br />
+<strong>The preview is updated almost in real time while editing.</strong></li>
+<li>Click <code>Save</code> to save the edited source to the file and finish editing.</li>
+<li>Click <code>Cancel</code> to cancel editing and discard the changes.</li>
+</ul>
+</li>
+</ol>
+<h3 id="options">Options</h3>
+<ul>
+<li>-C string<br />
+Change working directory</li>
+<li>-P uint<br />
+Port number (default 8000)</li>
+<li>-start<br />
+Open web browser at startup</li>
+</ul>
+<h2 id="changelog">Changelog</h2>
+<ul>
+<li><a href="CHANGELOG.html">English</a></li>
+<li><a href="CHANGELOG_ja.html">Japanese</a></li>
+</ul>
+<h2 id="author">Author</h2>
+<ul>
+<li><a href="https://github.com/hymkor">hymkor (HAYAMA Kaoru)</a></li>
+</ul>
+</div><!-- "main" -->
+<div class="sidebar markdown-body">
+<ul>
+<li><a href="#melw-markdown-editor-like-wikiengine">Melw - Markdown Editor Like WikiEngine</a>
+<ul>
+<li><a href="#install">Install</a>
+<ul>
+<li><a href="#manual-installation">Manual Installation</a></li>
+<li><a href="#use-eget-installer-cross-platform">Use [eget] installer (cross-platform)</a></li>
+<li><a href="#use-scoop-installer-windows-only">Use [scoop]-installer (Windows only)</a></li>
+<li><a href="#use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</a></li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a>
+<ul>
+<li><a href="#options">Options</a></li>
+</ul>
+</li>
+<li><a href="#changelog">Changelog</a></li>
+<li><a href="#author">Author</a></li>
+</ul>
+</li>
+</ul>
+</div><!-- "sidebar" -->
+</body></html>
