@@ -1,0 +1,185 @@
+<!DOCTYPE html><html><head>
+<title>Changelog</title>
+<style type="text/css">
+.markdown-body {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-size: 16px;
+    line-height: 1.6;
+    color: #24292f;
+    max-width: 900px;
+    margin: auto;
+}
+
+.markdown-body h1,
+.markdown-body h2 {
+    border-bottom: 1px solid #d8dee4;
+    padding-bottom: .3em;
+    font-weight: 600;
+}
+
+.markdown-body h1 { font-size: 2em; }
+.markdown-body h2 { font-size: 1.5em; }
+.markdown-body h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+}
+
+.markdown-body b,
+.markdown-body strong {
+    font-weight: 600;
+}
+
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol {
+    margin: 0 0 1em;
+}
+
+.markdown-body a {
+    color: #0969da;
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+.markdown-body blockquote {
+    margin: 0 0 1em;
+    padding: 0 1em;
+    color: #57606a;
+    border-left: 4px solid #d0d7de;
+}
+
+.markdown-body pre {
+    padding: 1em;
+    overflow-x: auto;
+    background: #f6f8fa;
+    border-radius: 6px;
+    font-size: 85%;
+}
+
+.markdown-body code {
+    background: #eff1f3;
+    padding: .15em .3em;
+    border-radius: 3px;
+}
+
+.markdown-body pre code {
+    background: none;
+    padding: 0;
+}
+
+.markdown-body table {
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+}
+
+.markdown-body th,
+.markdown-body td {
+    border: 1px solid #d0d7de;
+    padding: .4em .8em;
+}
+
+.markdown-body th {
+    background: #f6f8fa;
+}
+
+.markdown-body img {
+    max-width: 100%;
+}
+
+.markdown-body hr {
+    border: 0;
+    border-top: 1px solid #d8dee4;
+}
+
+.markdown-body tt,
+.markdown-body code,
+.markdown-body pre {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
+
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
+
+</style>
+</head><body>
+<div class="main markdown-body">
+<h1 id="changelog">Changelog</h1>
+<p>( <a href="./CHANGELOG.html">English</a> / Japanese )</p>
+<h2 id="v050">v0.5.0</h2>
+<p>Nov 12, 2026</p>
+<ul>
+<li>サービスを終了するリンクを追加 (#10)</li>
+<li>Ctrl-C で終了リンクと同様に綺麗に終了させるようにした (#11, #12)</li>
+<li>GitHub互換CSSを、より軽量なスタイルシートに置き換えた (#13)</li>
+<li>サーバー開始時にローカルURLを、終了時にメッセージを出すようにした (#14)</li>
+<li>macOS とFreeBSD を試験的にサポート (#15)</li>
+</ul>
+<h2 id="v040">v0.4.0</h2>
+<p>Oct 7, 2026</p>
+<ul>
+<li>デフォルトでは markdown のみを一覧するようにし、全てのファイルを表示するには <code>?all</code> を使うようにした。 (#8)</li>
+<li>モード切り替えのため、<code>(Markdown Only / All)</code> というスイッチを表示するようにした。 (#8)</li>
+</ul>
+<h2 id="v030">v0.3.0</h2>
+<p>Sep 18, 2026</p>
+<ul>
+<li>サーバー起動と同時に、ウェブブラウザを開くオプション <code>-start</code> を追加 (#6)</li>
+</ul>
+<h2 id="v020">v0.2.0</h2>
+<p>Sep 16, 2026</p>
+<ul>
+<li>Preview ボタンを廃止し、リアルタイムにプレビューを更新するようにした (#2-1)</li>
+<li>編集画面の左側に markdown のソースを、右側に描画結果を表示するようにした (#2-2)</li>
+<li><code>~~</code> による取り消し線(strike)を有効にした (#2-3)</li>
+</ul>
+<h2 id="v010">v0.1.0</h2>
+<p>Aug 26, 2026</p>
+<ul>
+<li>初版</li>
+</ul>
+</div><!-- "main" -->
+<div class="sidebar markdown-body">
+<ul>
+<li><a href="#changelog">Changelog</a>
+<ul>
+<li><a href="#v050">v0.5.0</a></li>
+<li><a href="#v040">v0.4.0</a></li>
+<li><a href="#v030">v0.3.0</a></li>
+<li><a href="#v020">v0.2.0</a></li>
+<li><a href="#v010">v0.1.0</a></li>
+</ul>
+</li>
+</ul>
+</div><!-- "sidebar" -->
+</body></html>

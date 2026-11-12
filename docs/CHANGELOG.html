@@ -1,0 +1,185 @@
+<!DOCTYPE html><html><head>
+<title>Changelog</title>
+<style type="text/css">
+.markdown-body {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-size: 16px;
+    line-height: 1.6;
+    color: #24292f;
+    max-width: 900px;
+    margin: auto;
+}
+
+.markdown-body h1,
+.markdown-body h2 {
+    border-bottom: 1px solid #d8dee4;
+    padding-bottom: .3em;
+    font-weight: 600;
+}
+
+.markdown-body h1 { font-size: 2em; }
+.markdown-body h2 { font-size: 1.5em; }
+.markdown-body h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+}
+
+.markdown-body b,
+.markdown-body strong {
+    font-weight: 600;
+}
+
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol {
+    margin: 0 0 1em;
+}
+
+.markdown-body a {
+    color: #0969da;
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+.markdown-body blockquote {
+    margin: 0 0 1em;
+    padding: 0 1em;
+    color: #57606a;
+    border-left: 4px solid #d0d7de;
+}
+
+.markdown-body pre {
+    padding: 1em;
+    overflow-x: auto;
+    background: #f6f8fa;
+    border-radius: 6px;
+    font-size: 85%;
+}
+
+.markdown-body code {
+    background: #eff1f3;
+    padding: .15em .3em;
+    border-radius: 3px;
+}
+
+.markdown-body pre code {
+    background: none;
+    padding: 0;
+}
+
+.markdown-body table {
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+}
+
+.markdown-body th,
+.markdown-body td {
+    border: 1px solid #d0d7de;
+    padding: .4em .8em;
+}
+
+.markdown-body th {
+    background: #f6f8fa;
+}
+
+.markdown-body img {
+    max-width: 100%;
+}
+
+.markdown-body hr {
+    border: 0;
+    border-top: 1px solid #d8dee4;
+}
+
+.markdown-body tt,
+.markdown-body code,
+.markdown-body pre {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
+
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
+
+</style>
+</head><body>
+<div class="main markdown-body">
+<h1 id="changelog">Changelog</h1>
+<p>( English / <a href="./CHANGELOG_ja.html">Japanese</a> )</p>
+<h2 id="v050">v0.5.0</h2>
+<p>Nov 12, 2026</p>
+<ul>
+<li>Added a <code>Shutdown Service</code> link to stop the web server. (#10)</li>
+<li>Support graceful shutdown via Ctrl-C as well as the <code>Shutdown Service</code> link. (#11, #12)</li>
+<li>Replace GitHub Markdown CSS with a simpler, lightweight stylesheet (#13)</li>
+<li>Log the local URL when the web server starts and a message when it stops (#14)</li>
+<li>Support FreeBSD and macOS experimantally (#15)</li>
+</ul>
+<h2 id="v040">v0.4.0</h2>
+<p>Oct 7, 2026</p>
+<ul>
+<li>Show Markdown files only by default; use <code>?all</code> to show all files. (#8)</li>
+<li>Added a <code>(Markdown Only / All)</code> toggle to switch between the two modes. (#8)</li>
+</ul>
+<h2 id="v030">v0.3.0</h2>
+<p>Sep 18, 2026</p>
+<ul>
+<li>Added the <code>-start</code> option to open a web browser when starting the server. (#6)</li>
+</ul>
+<h2 id="v020">v0.2.0</h2>
+<p>Sep 16, 2026</p>
+<ul>
+<li>Removed the <code>Preview</code> button and enabled real-time preview updates. (#2-1)</li>
+<li>The editing screen now displays the Markdown source on the left and the rendered result on the right. (#2-2)</li>
+<li>Enabled strikethrough using <code>~~</code>. (#2-3)</li>
+</ul>
+<h2 id="v010">v0.1.0</h2>
+<p>Aug 26, 2026</p>
+<ul>
+<li>The first release</li>
+</ul>
+</div><!-- "main" -->
+<div class="sidebar markdown-body">
+<ul>
+<li><a href="#changelog">Changelog</a>
+<ul>
+<li><a href="#v050">v0.5.0</a></li>
+<li><a href="#v040">v0.4.0</a></li>
+<li><a href="#v030">v0.3.0</a></li>
+<li><a href="#v020">v0.2.0</a></li>
+<li><a href="#v010">v0.1.0</a></li>
+</ul>
+</li>
+</ul>
+</div><!-- "sidebar" -->
+</body></html>
